@@ -1,5 +1,5 @@
 TITLE_ID = NLTK00001
-TARGET   = pluginsmanager
+TARGET   = VITAPluginsManager
 OBJS     = src/main.o src/draw.o src/font_data.o
 
 LIBS = -lc -lSceKernel_stub -lSceDisplay_stub -lSceGxm_stub	\
@@ -14,7 +14,11 @@ all: clean $(TARGET).vpk
 
 %.vpk: eboot.bin
 	vita-mksfoex -s TITLE_ID=$(TITLE_ID) "$(TARGET)" param.sfo
-	vita-pack-vpk -s param.sfo -b eboot.bin $@
+	vita-pack-vpk -s param.sfo -b eboot.bin \
+		--add sce_sys/icon0.png=sce_sys/icon0.png \
+		--add sce_sys/livearea/contents/startup.png=sce_sys/livearea/contents/startup.png \
+		--add sce_sys/livearea/contents/template.xml=sce_sys/livearea/contents/template.xml \
+	$(TARGET).vpk
 
 eboot.bin: $(TARGET).velf
 	vita-make-fself $< $@
