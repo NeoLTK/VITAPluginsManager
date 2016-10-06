@@ -8,4 +8,4 @@ Features :
 Require :
 
 * Henkaku HEN
-* plugins suprx on ux0/plugins or ux0/plugins_disaled
+* plugins suprx on ux0/plugins or ux0/plugins_disabled
