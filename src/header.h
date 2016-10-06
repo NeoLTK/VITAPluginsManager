@@ -19,6 +19,7 @@
 #include <psp2/display.h>
 #include <psp2/gxm.h>
 #include <psp2/io/dirent.h>
+#include <psp2/io/stat.h>
 
 #include "utils.h"
 #include "draw.h"
@@ -28,6 +29,10 @@ typedef struct plugins {
 	char *path;
 	bool active;
 } Plugins;
+
+extern char *defaultPath = "ux0:/plugins/";
+extern char *disablePath = "ux0:/plugins_disabled/";
+extern char *configsPath = "ux0:/plugins/game.txt";
 
 void menuDraw(Plugins plugins[], int *navOffset);
 void getPlugins (Plugins plugins[]);
