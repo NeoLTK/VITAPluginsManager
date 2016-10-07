@@ -32,4 +32,7 @@ void menuDraw(Plugins plugins[], int *navOffset) {
 			}
 		}
 	}
+
+	
+	font_draw_stringf(0, 10, RGBA8(0, 255, 0, 255), "VITAPluginsManager by NeoLTK | %s ", version);
 }

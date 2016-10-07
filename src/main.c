@@ -36,7 +36,6 @@ int main(int argc, char *argv[]) {
 
 	int navOffset = 0;
 	bool exit = false;
-	char *version = "V0.3";
 
 	sceCtrlSetSamplingMode(SCE_CTRL_MODE_ANALOG);
 
@@ -47,8 +46,6 @@ int main(int argc, char *argv[]) {
 
 		controle(pad, &navOffset, &exit, pluginsList, timer);
 		menuDraw(pluginsList, &navOffset);		
-		
-		font_draw_stringf(0, 10, RGBA8(0, 255, 0, 255), "VITAPluginsManager by NeoLTK | %s ", version);
 
 		swap_buffers();
 		sceDisplayWaitVblankStart();
