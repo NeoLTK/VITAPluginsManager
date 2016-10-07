@@ -1,3 +1,11 @@
+/*
+ * 
+ * Made by NeoLTK with xerpi draw
+ * 
+ */
+
+#include "header.h"
+
 void menuDraw(Plugins plugins[], int *navOffset) {
 	int i;
 	for (i = 0;  plugins[i].name != '\0'; i++) 

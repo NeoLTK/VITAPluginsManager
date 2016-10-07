@@ -1,3 +1,11 @@
+/*
+ * 
+ * Made by NeoLTK
+ * 
+ */
+
+#include "header.h"
+
 void dirPlugins(Plugins plugins[], int offset) {
 	char *tmp = malloc(sizeof(char) * (strlen(disablePath) + strlen(plugins[offset].name)));
 

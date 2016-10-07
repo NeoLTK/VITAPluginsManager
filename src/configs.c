@@ -1,3 +1,11 @@
+/*
+ * 
+ * Made by NeoLTK
+ * 
+ */
+
+#include "header.h"
+
 void putConfigs (Plugins plugins[]){
 	FILE* fp = fopen(configsPath, "w");
 

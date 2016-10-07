@@ -30,9 +30,9 @@ typedef struct plugins {
 	bool active;
 } Plugins;
 
-extern char *defaultPath = "ux0:/plugins/";
-extern char *disablePath = "ux0:/plugins_disabled/";
-extern char *configsPath = "ux0:/plugins/game.txt";
+#define defaultPath     ((char *) "ux0:/plugins/")
+#define disablePath     ((char *) "ux0:/plugins_disabled/")
+#define configsPath     ((char *) "ux0:/plugins/game.txt")
 
 void menuDraw(Plugins plugins[], int *navOffset);
 void getPlugins (Plugins plugins[]);

@@ -1,3 +1,11 @@
+/*
+ * 
+ * Made by NeoLTK
+ * 
+ */
+
+#include "header.h"
+
 void controle(SceCtrlData pad, int *navOffset, bool *exit, Plugins plugins[], SceUInt64 *timer) {
 	if (timer[0] >= (timer[1] + 100000)) {
 		if (pad.buttons & SCE_CTRL_UP) {
