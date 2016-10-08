@@ -36,10 +36,10 @@ typedef struct plugins {
 #define version     ((char *) "V0.4")
 
 void menuDraw(Plugins plugins[], int *navOffset);
-void getPlugins (Plugins plugins[]);
+void getPlugins(Plugins plugins[]);
 void getConfigs(Plugins plugins[]);
 void dirPlugins(Plugins plugins[], int offset);
-void putConfigs (Plugins plugins[]);
-void controle(SceCtrlData pad, int *navOffset, bool *exit, Plugins plugins[], SceUInt64 *timer);
+void putConfigs(Plugins plugins[]);
+void controle(SceCtrlData pad, int *navOffset, bool *exit, Plugins plugins[]);
 
 #endif
