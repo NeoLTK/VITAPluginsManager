@@ -33,7 +33,7 @@ typedef struct plugins {
 #define defaultPath     ((char *) "ux0:/plugins/")
 #define disablePath     ((char *) "ux0:/plugins_disabled/")
 #define configsPath     ((char *) "ux0:/plugins/game.txt")
-#define version     ((char *) "V0.4")
+#define version     ((char *) "V0.5")
 
 void menuDraw(Plugins plugins[], int *navOffset);
 void getPlugins(Plugins plugins[]);
