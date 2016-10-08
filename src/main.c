@@ -24,10 +24,6 @@ void finish() {
 int main(int argc, char *argv[]) {
 	init();
 
-	SceUInt64 timer[2];
-	timer[0] = 0;
-	timer[1] = 0;
-
 	SceCtrlData pad;
 	Plugins pluginsList[50];
 
@@ -40,11 +36,10 @@ int main(int argc, char *argv[]) {
 	sceCtrlSetSamplingMode(SCE_CTRL_MODE_ANALOG);
 
 	while(exit != true){
-		timer[0] = sceKernelGetProcessTimeWide();
 		sceCtrlPeekBufferPositive(0, &pad, 1);
 		clear_screen();
 
-		controle(pad, &navOffset, &exit, pluginsList, timer);
+		controle(pad, &navOffset, &exit, pluginsList);
 		menuDraw(pluginsList, &navOffset);		
 
 		swap_buffers();
