@@ -24,23 +24,36 @@ void finish() {
 int main(int argc, char *argv[]) {
 	init();
 
-	SceCtrlData pad;
-	Plugins pluginsList[50];
+	Plugins plugins[50];
+	
+	Menu panelMenu[3];
+	panelMenu[0].title = "Enable";
+	panelMenu[1].title = "Disable";
+	panelMenu[2].title = "Scan plugins";
+	panelMenu[2].function = &securityCheck;
 
-	getPlugins(pluginsList);
-	getConfigs(pluginsList);
+	RightPanel rightPanel;
+	rightPanel.panelMenu = panelMenu;
+	rightPanel.active = false;
+	rightPanel.navOffset = 0;
 
-	int navOffset = 0;
-	bool exit = false;
+	Manager pluginsManager;
+	pluginsManager.plugins = plugins;
+	pluginsManager.rightPanel = &rightPanel;
+	pluginsManager.navOffset = 0;
+	pluginsManager.active = true;
+
+	getPlugins(plugins);
+	getConfigs(plugins);
 
 	sceCtrlSetSamplingMode(SCE_CTRL_MODE_ANALOG);
 
-	while(exit != true){
-		sceCtrlPeekBufferPositive(0, &pad, 1);
+	while(pluginsManager.active){
+		sceCtrlPeekBufferPositive(0, &(pluginsManager.pad), 1);
 		clear_screen();
 
-		controle(pad, &navOffset, &exit, pluginsList);
-		menuDraw(pluginsList, &navOffset);		
+		controle(&pluginsManager);
+		menuDraw(&pluginsManager);		
 
 		swap_buffers();
 		sceDisplayWaitVblankStart();

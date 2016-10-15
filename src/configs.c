@@ -7,45 +7,52 @@
 #include "header.h"
 
 void putConfigs (Plugins plugins[]){
-	FILE* fp = fopen(configsPath, "w");
+	sceIoRemove(configsPath);
+	SceUID fp = sceIoOpen(configsPath, SCE_O_WRONLY | SCE_O_CREAT, 0777);
+	char *path;
 
-	if (fp != NULL){
+	if (fp >= 0){
 		for (int i = 0; plugins[i].name != '\0'; i++) {
-			if (plugins[i].active)
-				fprintf(fp, "%s %d\n", plugins[i].path, (plugins[i].active ? 1 : 0));
-		}
+			path = malloc(sizeof(char) * (strlen(defaultPath) + strlen(plugins[i].name) + 4));
+			strcpy(path, defaultPath);
+			strcat(path, plugins[i].name);
+			strcat(path, " 1\n");
 
-		fclose(fp);
+			if (plugins[i].active)
+				sceIoWrite(fp, path, strlen(path));
+
+			free(path);
+		}
+	
+		sceIoClose(fp);
 	}
 }
 
 void getConfigs(Plugins plugins[]){
-	FILE* fp;
+	SceUID fp;
 	bool next = false;
-	const size_t lineNB = 50;
-	char* line = malloc(lineNB);
+	int lineNB = 512;
+	char line[lineNB];
+	char *path;
+	char *token;
 
 	for (int i = 0; plugins[i].name != '\0'; i++) {
-		fp = fopen(configsPath, "r");
+		fp = sceIoOpen(configsPath, SCE_O_RDONLY, 0777);
 
-		if (fp != NULL) {
+		if (fp >= 0) {
 			next = false;
-			while (fgets(line, lineNB, fp) != NULL && next != true)  {
-		    	if (strstr(line, plugins[i].name) != NULL){
-		    		char *token = strtok(line, " ");
-		    		if (token != NULL){
-		    			token = strtok(NULL, " ");
-		    			if (token != NULL){
-		    				if (strstr(token, "1") != NULL){
-		    					plugins[i].active = true;
-		    					next = true;
-		    				} else plugins[i].active = false;
-		    			} else plugins[i].active = false;
-		    		} else plugins[i].active = false;
+			while (sceIoRead(fp, line, lineNB) && !next)  {
+		    	if (strstr(line, plugins[i].name) != NULL && (token = strtok(line, " ")) != NULL){
+	    			path = malloc(sizeof(char) * (strlen(token) + 1));
+	    			strcpy(path, token);
+    				if ((token = strtok(NULL, " ")) != NULL && strstr(token, "1") != NULL && access(path, F_OK ) != -1){
+						next = true;
+						plugins[i].active = true;
+    				} else plugins[i].active = false;
+	    			free(path);
 		    	} else plugins[i].active = false;
 			}
-			fclose(fp);
+			sceIoClose(fp);
 		}
 	}
-	free(line);
 }

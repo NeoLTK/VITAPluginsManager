@@ -20,6 +20,7 @@
 #define PURP  RGBA8(147, 112, 219, 255)
 #define WHITE RGBA8(255, 255, 255, 255)
 #define BLACK RGBA8(0,   0,   0,   255)
+#define DARKGREY RGBA8(39,   46,   36,   255)
 
 void init_video();
 void end_video();

@@ -8,7 +8,7 @@
 
 void uiDraw(){
 	font_draw_string(20, 10, RGBA8(0, 255, 0, 255), "Plugins Name");
-	font_draw_string(775, 10, RGBA8(0, 255, 0, 255), "Status");
+	font_draw_string(775, 10, RGBA8(0, 255, 0, 255), "Status  |(/\\");
 	draw_rectangle(0, 35, 960, 1, GREEN);
 
 	draw_rectangle(0, 510, 960, 1, GREEN);
@@ -17,52 +17,96 @@ void uiDraw(){
 }
 
 uint32_t epileptik (){
-	static bool offset = true;
-    static uint32_t value = 0;
+	static bool flag = true;
+    static uint32_t offset = 0;
 
-	if (value < 255 && offset)
-		return value = value + 3;
-	else if (value > 0 && !offset)
-		return value = value - 3;
-	else if (value == 0)
-		offset = true;
-	else if (value == 255)
-		offset = false;
+	if (offset < 255 && flag)
+		return offset = offset + 3;
+	else if (offset > 0 && !flag)
+		return offset = offset - 3;
+	else if (offset == 0)
+		flag = true;
+	else if (offset == 255)
+		flag = false;
 
-	return value;
+	return offset;
 }
 
-void menuDraw(Plugins plugins[], int *navOffset) {
-	int i;
-	for (i = 0;  plugins[i].name != '\0'; i++) 
-		continue;
+void rightPanel(RightPanel *panel, int size){
+	static int offset = 0;
+	static int x = 960;
+	static int y = 36;
+	static int w = 0;
+	static int h = 474;
+	int baseX = 960;
+	int p = (offset * size) / 100;
+	
+	x = baseX - p;
+	w = p;
 
-	int size = i;
-	uint32_t epileptikColor = epileptik();
+	if (panel->active && offset < 100) offset = offset + 10;
+	else if (!panel->active && offset > 0) offset = offset - 10;
 
-	if (size > 0) {
-		if (*navOffset > size-1) {
-			*navOffset = 0;
-		} else if (*navOffset < 0) {
-			*navOffset = size-1;
-		}
+	if (panel->navOffset > sizeof(panel->panelMenu) -1) {
+		panel->navOffset = 0;
+	} else if (panel->navOffset < 0) {
+		panel->navOffset = sizeof(panel->panelMenu) -1;
+	}
+	
+	draw_rectangle(x, y, w, h, DARKGREY);
 
-		for (int i = 0; plugins[i].name != '\0'; i++) {
-
-			if (*navOffset == i) {
-				font_draw_string(20, 55 + (i * 25), RGBA8(epileptikColor, epileptikColor, epileptikColor, 255), "*");
-				font_draw_string(50, 55 + (i * 25), RGBA8(255, 255, 255, 255), plugins[i].name);
-				font_draw_string(750, 55 + (i * 25), RGBA8(255, 255, 255, 255), (plugins[i].active ? "[ENABLED]" : "[DISABLED]"));
-				font_draw_string(925, 55 + (i * 25), RGBA8(epileptikColor, epileptikColor, epileptikColor, 255), "*");
-
-			} else {
-				font_draw_string(50, 55 + (i * 25), RGBA8(0, 255, 0, 255),  plugins[i].name);
-				font_draw_string(750, 55 + (i * 25), RGBA8(0, 255, 0, 255), (plugins[i].active ? "[ENABLED]" : "[DISABLED]"));
-			}
+	if (offset == 100) {
+		for (int i = 0; i != sizeof(panel->panelMenu) - 1; i++){
+			if (panel->navOffset == i)
+				font_draw_string(740, 45 + i * 25, RGBA8(255, 255, 255, 255), panel->panelMenu[i].title);
+			else
+				font_draw_string(740, 45 + i * 25, RGBA8(0, 255, 0, 255), panel->panelMenu[i].title);
 		}
 	}
 
+}
+
+void menuDraw(Manager *pluginsManager) {
+	int i;
+	for (i = 0;  pluginsManager->plugins[i].name != '\0'; i++) 
+		continue;
+
+	int size = i;
+	uint32_t eC = epileptik();
+
+	if (size > 0) {
+		if (pluginsManager->navOffset > size-1) {
+			pluginsManager->navOffset = 0;
+		} else if (pluginsManager->navOffset < 0) {
+			pluginsManager->navOffset = size-1;
+		}
+
+
+		for (int i = 0; pluginsManager->plugins[i].name != '\0'; i++) {
+
+			if (pluginsManager->navOffset == i) {
+				font_draw_string(20, 55 + (i * 25), RGBA8(eC, eC, eC, 255), "*");
+				font_draw_string(925, 55 + (i * 25), RGBA8(eC, eC, eC, 255), "*");
+
+				font_draw_string(50, 55 + (i * 25), RGBA8(255, 255, 255, 255), pluginsManager->plugins[i].name);
+				font_draw_string(750, 55 + (i * 25), RGBA8(255, 255, 255, 255), (pluginsManager->plugins[i].active ? "[ENABLED]" : "[DISABLED]"));
+
+			} else {
+				font_draw_string(50, 55 + (i * 25), RGBA8(0, 255, 0, 255),  pluginsManager->plugins[i].name);
+				font_draw_string(750, 55 + (i * 25), RGBA8(0, 255, 0, 255), (pluginsManager->plugins[i].active ? "[ENABLED]" : "[DISABLED]"));
+			}
+
+			if (pluginsManager->plugins[i].safe == false)
+				font_draw_string(945, 55 + (i * 25), RGBA8(255, 0, 0, 255), "*");
+
+		}
+
+	}
 
 	uiDraw();
+	rightPanel(pluginsManager->rightPanel, 250);
 }
+
+
+
 
