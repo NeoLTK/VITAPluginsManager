@@ -24,7 +24,10 @@
 #include "utils.h"
 #include "draw.h"
 
+typedef struct manager Manager;
+
 typedef struct plugins {
+	Manager *pluginsManager;
 	char *name;
 	char *path;
 	bool active;
@@ -42,14 +45,15 @@ typedef struct rightpanel {
 	Menu *panelMenu;
 } RightPanel;
 
-typedef struct manager {
+struct manager {
 	char *version;
+	char *message;
 	int navOffset;
 	bool active;
 	Plugins *plugins;
 	RightPanel *rightPanel;
 	SceCtrlData pad;
-} Manager;
+};
 
 
 
@@ -57,14 +61,18 @@ typedef struct manager {
 #define defaultPath     ((char *) "ux0:/plugins/")
 #define disablePath     ((char *) "ux0:/plugins_disabled/")
 #define configsPath     ((char *) "ux0:/plugins/game.txt")
-#define version     ((char *) "V0.6")
+#define version     ((char *) "0.6")
+
 
 void securityCheck(Plugins *plugins);
 void menuDraw(Manager *pluginsManager);
-void getPlugins(Plugins plugins[]);
+void uiDraw(Manager *pluginsManager);
+void getPlugins(Manager *pluginsManager);
 void getConfigs(Plugins plugins[]);
 void dirPlugins(Manager *pluginsManager);
 void putConfigs(Plugins plugins[]);
+void enablePlugins(Plugins *plugins);
+void disablePlugins(Plugins *plugins);
 void controle(Manager *pluginsManager);
 
 #endif

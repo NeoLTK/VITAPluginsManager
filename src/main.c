@@ -27,9 +27,11 @@ int main(int argc, char *argv[]) {
 	Plugins plugins[50];
 	
 	Menu panelMenu[3];
-	panelMenu[0].title = "Enable";
-	panelMenu[1].title = "Disable";
-	panelMenu[2].title = "Scan plugins";
+	panelMenu[0].title = "Enable it";
+	panelMenu[0].function = &enablePlugins;
+	panelMenu[1].title = "Disable it";
+	panelMenu[1].function = &disablePlugins;
+	panelMenu[2].title = "Scan it";
 	panelMenu[2].function = &securityCheck;
 
 	RightPanel rightPanel;
@@ -42,8 +44,9 @@ int main(int argc, char *argv[]) {
 	pluginsManager.rightPanel = &rightPanel;
 	pluginsManager.navOffset = 0;
 	pluginsManager.active = true;
+	pluginsManager.message = "Welcome !";
 
-	getPlugins(plugins);
+	getPlugins(&pluginsManager);
 	getConfigs(plugins);
 
 	sceCtrlSetSamplingMode(SCE_CTRL_MODE_ANALOG);
@@ -53,7 +56,7 @@ int main(int argc, char *argv[]) {
 		clear_screen();
 
 		controle(&pluginsManager);
-		menuDraw(&pluginsManager);		
+		uiDraw(&pluginsManager);		
 
 		swap_buffers();
 		sceDisplayWaitVblankStart();

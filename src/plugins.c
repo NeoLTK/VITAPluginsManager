@@ -73,81 +73,87 @@ void securityCheck(Plugins *plugins){
 	return;
 }
 
+char* mStrCapy(char **str, char *mstrcpy, char *mstrcat){
+	*str = malloc(sizeof(char) * (strlen(mstrcpy) + strlen(mstrcat) + 1));
+
+	strcpy(*str, mstrcpy);
+	strcat(*str, mstrcat);
+
+	return *str;
+}
 
 void dirPlugins(Manager *pluginsManager) {
 	int offset = pluginsManager->navOffset;
-	char *defPath = malloc(sizeof(char) * (strlen(defaultPath) + strlen(pluginsManager->plugins[offset].name) + 1));
-	char *disPath = malloc(sizeof(char) * (strlen(disablePath) + strlen(pluginsManager->plugins[offset].name) + 1));
+	Plugins *plugins = &(pluginsManager->plugins[offset]);
 
-	strcpy(disPath, disablePath);
-	strcat(disPath, pluginsManager->plugins[offset].name);
+	char *defPath = mStrCapy(&defPath, defaultPath, plugins->name);
+	char *disPath = mStrCapy(&disPath, disablePath, plugins->name);
 
-	strcpy(defPath, defaultPath);
-	strcat(defPath, pluginsManager->plugins[offset].name);	
-
-	if (pluginsManager->plugins[offset].active == false){
-		if (access(defPath, F_OK ) == -1 ) {
+	if (plugins->active == false){
+		if (access(defPath, F_OK ) == -1) {
 			rename (disPath, defPath);
-			pluginsManager->plugins[offset].active = true;
+			plugins->active = true;
 
-			free(pluginsManager->plugins[offset].path);
-			pluginsManager->plugins[offset].path = (char *) malloc(strlen(defPath) + 1);
-			memcpy(pluginsManager->plugins[offset].path, defPath, strlen(defPath) + 1);
+			free(plugins->path);
+			plugins->path = (char *) malloc(strlen(defPath) + 1);
+			memcpy(plugins->path, defPath, strlen(defPath) + 1);
 		} else {
-			pluginsManager->plugins[offset].active = true;
+			plugins->active = true;
 		}
 		
 	} else { 
-		if (access(defPath, F_OK ) != -1) {
+		if (access(defPath, F_OK ) != -1)
 			rename (defPath, disPath);
-		}
 
-		pluginsManager->plugins[offset].active = false;
+		plugins->active = false;
 
-		free(pluginsManager->plugins[offset].path);
-		pluginsManager->plugins[offset].path = (char *) malloc(strlen(disPath) + 1);
-		memcpy(pluginsManager->plugins[offset].path, disPath, strlen(disPath) + 1);
+		free(plugins->path);
+		plugins->path = (char *) malloc(strlen(disPath) + 1);
+		memcpy(plugins->path, disPath, strlen(disPath) + 1);
 	}
 
 	free(disPath);
 	free(defPath);
 }
 
-int putPlugins(Plugins plugins[], SceIoDirent item, int offset, char *path){
-	if (strstr(item.d_name, "suprx") != NULL) {
-    	plugins[offset].name = malloc(sizeof(char) * (strlen(item.d_name) + 1));
-    	strcpy(plugins[offset].name, item.d_name);
 
-    	plugins[offset].path = malloc(sizeof(char) * (strlen(path) + strlen(plugins[offset].name) + 1));
-    	strcpy(plugins[offset].path, path);
-    	strcat(plugins[offset].path, plugins[offset].name);
+void getPlugins (Manager *pluginsManager) {
+	struct SceIoDirent item;
+	Plugins *plugins = pluginsManager->plugins;
+	char *path[2] = {defaultPath, disablePath};
+	int fd, offset = 0;
+	
+	for (int i = 0; i <= 1; i++) {
+		if ((fd = sceIoDopen(path[i])) < 0) continue;
 
-    	plugins[offset].active = false;
-		return 1;
+		while (sceIoDread(fd, &item)) {
+			if (strstr(item.d_name, "suprx") == NULL) continue;
+
+			plugins[offset].name = mStrCapy(&(plugins[offset].name), item.d_name, "");
+	    	plugins[offset].path = mStrCapy(&(plugins[offset].path), path[i], item.d_name);
+			plugins[offset].pluginsManager = (Manager *) pluginsManager;
+	    	plugins[offset].active = false;
+
+			offset++;
+		}
+
+	    sceIoDclose(fd);
 	}
 
-	return 0;
+    plugins[offset].name = malloc(sizeof(char));
+   	plugins[offset].name = '\0';
 }
 
-void getPlugins (Plugins plugins[]) {
-	struct SceIoDirent dir;
-	int offset = 0;
-	int fd;
-	char *path[2];
-	path[0] = defaultPath;
-	path[1] = disablePath;
-	
+void enablePlugins(Plugins *plugins){
+	if (!plugins->active){
+		dirPlugins(plugins->pluginsManager);
+		putConfigs(plugins->pluginsManager->plugins);
+	}
+}
 
-	for (int i = 0; i <= 1; i++) {
-		fd = sceIoDopen(path[i]);
-		if (fd >= 0) {
-			while(sceIoDread(fd, &dir)) 
-        		offset = offset + putPlugins(plugins, dir, offset, path[i]);
-
-		    sceIoDclose(fd);
-		}
-		
-	    plugins[offset].name = malloc(sizeof(char));
-	   	plugins[offset].name = '\0';
+void disablePlugins(Plugins *plugins){
+	if (plugins->active){
+		dirPlugins(plugins->pluginsManager);
+		putConfigs(plugins->pluginsManager->plugins);
 	}
 }
