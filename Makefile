@@ -1,6 +1,6 @@
 TITLE_ID = NLTK00001
 TARGET   = VITAPluginsManager
-OBJS     = src/main.o src/draw.o src/font_data.o src/controle.o src/configs.o src/plugins.o src/menu.o
+OBJS     = src/main.o src/draw.o src/font_data.o src/controle.o src/configs.o src/plugins.o src/ui.o
 
 LIBS = -lc -lSceKernel_stub -lSceDisplay_stub -lSceGxm_stub	\
 	-lSceCtrl_stub -lSceTouch_stub
