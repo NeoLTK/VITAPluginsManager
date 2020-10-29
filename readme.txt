@@ -1,3 +1,5 @@
+/!\ deprecated
+
 VITAPluginsManager for vitamin / mai dump
 
 Features :
